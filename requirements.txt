@@ -1,0 +1,6 @@
+boto3
+xradar
+netCDF4
+h5netcdf
+numpy
+xarray

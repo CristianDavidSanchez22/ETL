@@ -24,7 +24,6 @@ class RadarETL:
         prefix = f"l2_data/{date.year}/{date.month:02d}/{date.day:02d}/{self.radar_name}/"
         return [
             obj.key for obj in self.bucket.objects.filter(Prefix=prefix)
-            if obj.key.endswith(".RAWHDKV")
         ]
 
     def filter_unprocessed(self, files):

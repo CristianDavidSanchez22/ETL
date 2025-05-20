@@ -17,10 +17,16 @@ if __name__ == "__main__":
     processor = RadarProcessor(output_dir="/data/radar_processed")
     repository = RadarMetadataRepository(db_params=DB_PARAMS)
 
-    etl = RadarETL(
-        radar_name="Guaviare",
-        downloader=downloader,
-        processor=processor,
-        repository=repository
-    )
+    if __name__ == "__main__":
+        downloader = S3RadarDownloader()
+        processor = RadarProcessor(output_dir="/data/radar_processed")
+        repository = RadarMetadataRepository(db_params=DB_PARAMS)
+
+        etl = RadarETL(
+            radar_name="Guaviare",
+            downloader=downloader,
+            processor=processor,
+            repository=repository
+        )
+        etl.run()
     etl.run()

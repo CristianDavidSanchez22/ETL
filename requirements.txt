@@ -1,6 +1,6 @@
 boto3
-xradar
 netCDF4
 h5netcdf
 numpy
-xarray
+xradar==0.3.0
+xarray==2023.12.0

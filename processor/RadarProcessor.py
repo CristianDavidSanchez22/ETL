@@ -23,7 +23,7 @@ class RadarProcessor:
         ds = xd.georeference.get_x_y_z(ds)
 
         # Extraer timestamp y nombre del archivo
-        timestamp = ds.time.values.astype("datetime64[s]").item().strftime("%Y%m%dT%H%M%S")
+        timestamp = ds.time.values[0].astype("datetime64[s]").item().strftime("%Y%m%dT%H%M%S")
         filename = f"{timestamp}_sweep0.nc"
         local_path = os.path.join(self.output_dir, filename)
         ds.to_netcdf(local_path)

@@ -23,25 +23,23 @@ class RadarETL:
         if not new_files:
             logging.info("No new files to process.")
             return
- 
-        metadata_records = []
-        for s3_key in new_files:
-            try:
-                local_path, meta = self.processor.process(s3_key)
-                metadata = {
-                    "radar_name": self.radar_name,
-                    "s3_key": s3_key,
-                    "processed_at": date,
-                    "local_path": local_path,
-                    "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})",
-                    "sweep_number": meta["sweep_number"]
-                }
-                metadata_records.append(metadata)
-                logging.info(f"Processed {s3_key} -> {local_path}")
-                break 
-            except Exception as e:
-                logging.error(f"Error processing {s3_key}: {e}")
 
-        if metadata_records:
-            self.repository.insert_metadata_batch(metadata_records)
-            logging.info(f"Inserted {len(metadata_records)} records into DB.")
+        try:
+            for s3_key in new_files:
+                try:
+                    local_path, meta = self.processor.process(s3_key)
+                    metadata = {
+                        "radar_name": self.radar_name,
+                        "s3_key": s3_key,
+                        "processed_at": date,
+                        "local_path": local_path,
+                        "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})",
+                        "sweep_number": meta["sweep_number"]
+                    }
+                    self.repository.insert_metadata(metadata)
+                    logging.info(f"Processed {s3_key} -> {local_path}")
+                except Exception as e:
+                    logging.error(f"Error processing {s3_key}: {e}")
+        finally:
+            self.repository.close()
+            logging.info("ETL process completed.")

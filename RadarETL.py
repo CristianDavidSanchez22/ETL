@@ -33,11 +33,11 @@ class RadarETL:
                         "s3_key": s3_key,
                         "processed_at": date,
                         "local_path": local_path,
-                        "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})",
-                        "sweep_number": meta["sweep_number"]
+                        "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})"
                     }
                     self.repository.insert_metadata(metadata)
                     logging.info(f"Processed {s3_key} -> {local_path}")
+                    break
                 except Exception as e:
                     logging.error(f"Error processing {s3_key}: {e}")
         finally:

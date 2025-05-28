@@ -11,5 +11,6 @@ class RadarFile(Base):
     processed_at = Column(DateTime, nullable=False)
     file_time = Column(DateTime, nullable=False)
     local_path = Column(Text, nullable=False)
+    sweep_fixed_angle = Column(Text, nullable=True)
     radar = relationship("Radar", back_populates="files")
     statistics = relationship("RadarStatistics", back_populates="radar_file", uselist=False)

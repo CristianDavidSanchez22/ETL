@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from geoalchemy2.shape import from_shape
-from shapely.geometry import Point
+from shapely.geometry import Point, shape
 
 from models.Radar import Radar
 from models.RadarFile import RadarFile
@@ -50,10 +50,42 @@ class RadarMetadataRepository:
             radar_id=radar_id,
             s3_key=record["s3_key"],
             processed_at=record["processed_at"],
-            file_time=record["processed_at"],
-            local_path=record["local_path"]
+            file_time= record["file_time"],
+            local_path=record["local_path"],
+            sweep_fixed_angle=record["sweep_fixed_angle"],
         )
         self.session.add(radar_file)
+        try:
+            self.session.commit()
+            return radar_file.id
+        except IntegrityError:
+            self.session.rollback()
+            return None
+    
+    def insert_statistics(self, radar_file_id: int, stats: dict):
+        """
+        Inserta una fila en RadarStatistics.
+        stats debe ser un dict con las claves:
+        mean_reflectivity, max_reflectivity, min_reflectivity, rain_area_percent,
+        duration_minutes, event_bbox (GeoJSON o shapely), created_at (opcional)
+        """
+        event_bbox = stats.get("event_bbox")
+        if event_bbox is not None and not hasattr(event_bbox, 'geom_type'):
+            event_bbox = from_shape(shape(event_bbox), srid=4326)
+        elif event_bbox is not None:
+            event_bbox = from_shape(event_bbox, srid=4326)
+
+        radar_stats = RadarStatistics(
+            file_id=radar_file_id,
+            mean_reflectivity=stats.get("mean_reflectivity"),
+            max_reflectivity=stats.get("max_reflectivity"),
+            min_reflectivity=stats.get("min_reflectivity"),
+            rain_area_percent=stats.get("rain_area_percent"),
+            duration_minutes=stats.get("duration_minutes"),
+            bbox=event_bbox,
+            created_at=stats.get("created_at")
+        )
+        self.session.add(radar_stats)
         try:
             self.session.commit()
         except IntegrityError:

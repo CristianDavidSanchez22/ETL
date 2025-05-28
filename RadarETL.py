@@ -27,17 +27,19 @@ class RadarETL:
         try:
             for s3_key in new_files:
                 try:
-                    local_path, meta = self.processor.process(s3_key)
+                    local_path, meta, statistics = self.processor.process(s3_key)
                     metadata = {
                         "radar_name": self.radar_name,
                         "s3_key": s3_key,
                         "processed_at": date,
+                        "file_time": meta['file_time'],
                         "local_path": local_path,
-                        "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})"
+                        "bbox": f"SRID=4326;POINT({meta['longitude']} {meta['latitude']})",
+                        "sweep_fixed_angle": f"{meta['sweep_fixed_angle']}"
                     }
-                    self.repository.insert_metadata(metadata)
+                    radar_file_id = self.repository.insert_metadata(metadata)
+                    self.repository.insert_statistics(radar_file_id, statistics)
                     logging.info(f"Processed {s3_key} -> {local_path}")
-                    break
                 except Exception as e:
                     logging.error(f"Error processing {s3_key}: {e}")
         finally:

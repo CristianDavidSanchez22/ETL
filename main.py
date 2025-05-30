@@ -5,6 +5,9 @@ from loader.RadarMetadataRepository import RadarMetadataRepository
 import warnings
 import numpy as np
 import os
+import argparse
+from datetime import datetime
+from pytz import timezone
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.seterr(invalid='ignore')
@@ -20,14 +23,24 @@ DB_PARAMS = {
 DB_URL = f"postgresql+psycopg2://{DB_PARAMS['user']}:{DB_PARAMS['password']}@{DB_PARAMS['host']}:{DB_PARAMS['port']}/{DB_PARAMS['dbname']}"
 
 if __name__ == "__main__":
-    downloader = S3RadarDownloader(radar_name="Guaviare")   
-    processor = RadarProcessor(output_dir="./data/radar_processed")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--radar", type=str, required=False, default="Guaviare", help="Nombre del radar a procesar (default: Guaviare)")
+    parser.add_argument("--date", type=str, required=False, help="Fecha en formato YYYYMMDD para procesar archivos específicos")
+    args = parser.parse_args()
+    radar_name = args.radar
+    if args.date:
+        input_date = args.date
+    else:
+        lima_tz = timezone("America/Lima")
+        input_date = datetime.now(lima_tz).strftime("%Y%m%d")
+    downloader = S3RadarDownloader(radar_name)   
+    processor = RadarProcessor(output_dir=f"./data/radar_processed/{radar_name}/{input_date}/")
     repository = RadarMetadataRepository(db_url=DB_URL)
-
+    input_date = datetime.strptime(input_date, "%Y%m%d") if input_date else None
     etl = RadarETL(
-        radar_name="Guaviare",
+        radar_name=radar_name,
         downloader=downloader,
         processor=processor,
         repository=repository
     )
-    etl.run()
+    etl.run(input_date)

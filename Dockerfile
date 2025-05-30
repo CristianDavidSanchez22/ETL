@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y \
     gcc \
     libhdf5-dev \
     libnetcdf-dev \
+    libgeos-dev \
+    libproj-dev \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Copia archivos del proyecto
@@ -19,4 +22,4 @@ RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 
 # Comando por defecto (puedes sobreescribirlo)
-CMD ["python", "etl.py"]
+CMD ["python", "main.py"]

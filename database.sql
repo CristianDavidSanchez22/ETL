@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS radar_file (
     processed_at TIMESTAMPTZ NOT NULL,
     file_time TIMESTAMPTZ NOT null,
     local_path TEXT NOT NULL,
+    sweep_fixed_angle TEXT NOT NULL, -- Fixed angle of the sweep
     UNIQUE (radar_id, s3_key)
 );
 

@@ -4,17 +4,19 @@ from processor.RadarProcessor import RadarProcessor
 from loader.RadarMetadataRepository import RadarMetadataRepository
 import warnings
 import numpy as np
+import os
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.seterr(invalid='ignore')
 
 DB_PARAMS = {
-    "dbname": "radares_ideam",
-    "user": "postgres",
-    "password": "123",
-    "host": "localhost",
-    "port": 5432
+    "dbname": os.getenv("DB_NAME", "radares_ideam"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", "123"),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("DB_PORT", 5432))
 }
+
 DB_URL = f"postgresql+psycopg2://{DB_PARAMS['user']}:{DB_PARAMS['password']}@{DB_PARAMS['host']}:{DB_PARAMS['port']}/{DB_PARAMS['dbname']}"
 
 if __name__ == "__main__":

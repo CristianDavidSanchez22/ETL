@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: host.docker.internal  # Usar host.docker.internal para acceder al host desde el contenedor
+      DB_PORT: 5432
+      DB_NAME: radares_ideam
+      DB_USER: postgres
+      DB_PASSWORD: 123
+    # depends_on:
+    #   - postgres
+    volumes:
+        - ./data:/app/data  # Monta el directorio local ./data en /app/data dentro del contenedor
+    command: ["python", "main.py"]
+#   postgres:
+#       image: postgis/postgis:15-3.3  # Imagen oficial de PostgreSQL con PostGIS
+#       environment:
+#         POSTGRES_DB: radares_ideam
+#         POSTGRES_USER: postgres
+#         POSTGRES_PASSWORD: 123
+#       ports:
+#         - "5432:5432"
+#       volumes:
+#         - postgres_data:/var/lib/postgresql/data
+#         - ./database.sql:/docker-entrypoint-initdb.d/database.sql:ro  # Ejecuta el script al iniciar
+# volumes:
+#   postgres_data:  # Volumen para persistir los datos de PostgreSQL
+    

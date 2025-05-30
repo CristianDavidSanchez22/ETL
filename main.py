@@ -22,7 +22,7 @@ DB_PARAMS = {
 
 DB_URL = f"postgresql+psycopg2://{DB_PARAMS['user']}:{DB_PARAMS['password']}@{DB_PARAMS['host']}:{DB_PARAMS['port']}/{DB_PARAMS['dbname']}"
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--radar", type=str, required=False, default="Guaviare", help="Nombre del radar a procesar (default: Guaviare)")
     parser.add_argument("--date", type=str, required=False, help="Fecha en formato YYYYMMDD para procesar archivos específicos")
@@ -33,6 +33,14 @@ if __name__ == "__main__":
     else:
         lima_tz = timezone("America/Lima")
         input_date = datetime.now(lima_tz).strftime("%Y%m%d")
+    return radar_name, input_date
+
+
+
+if __name__ == "__main__":
+    
+    radar_name, input_date = parse_args()
+        
     downloader = S3RadarDownloader(radar_name)   
     processor = RadarProcessor(output_dir=f"./data/radar_processed/{radar_name}/{input_date}/")
     repository = RadarMetadataRepository(db_url=DB_URL)

@@ -11,12 +11,12 @@ class RadarETL:
         self.processor = processor
         self.repository = repository
 
-    def run(self, date: datetime = None):
+    def run(self, date: datetime = None, from_hour: int = 0):
         lima_tz = pytz.timezone("America/Lima")
         date = date or datetime.now(lima_tz)
-        logging.info(f"Checking files for {self.radar_name} on {date.date()}")
+        logging.info(f"Checking files for {self.radar_name} on {date.date()} from hour {from_hour}")
 
-        all_files = self.downloader.list_files_for_date(date)
+        all_files = self.downloader.list_files_for_date(date, from_hour = from_hour)
         processed_files = self.repository.get_processed_files(self.radar_name)
 
         new_files = [f for f in all_files if f not in processed_files]

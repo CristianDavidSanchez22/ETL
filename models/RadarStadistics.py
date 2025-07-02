@@ -4,7 +4,7 @@ from .Base import Base
 from sqlalchemy.orm import relationship
 
 class RadarStatistics(Base):
-    __tablename__ = 'radar_statistics'
+    __tablename__ = 'radar_stadistics'
     id = Column(Integer, primary_key=True)
     file_id = Column(Integer, ForeignKey('radar_file.id', ondelete="CASCADE"), nullable=False, unique=True)
     mean_reflectivity = Column(Float)

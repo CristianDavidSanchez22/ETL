@@ -107,3 +107,6 @@ Desktop.ini
 data/
 output/
 logs/
+
+# Ignore other folders
+otros/

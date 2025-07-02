@@ -22,5 +22,7 @@ def mostrar_metadatos_raw(path):
         print(f"  {coord}: {ds[coord].dims}, dtype={ds[coord].dtype}")
 
 if __name__ == "__main__":
-    archivo = r"F:\Archivos\PC\Maestria\Tesis\Daza\GUA240501000024.RAWA1T5"
+    archivo = r"C:\Users\Ryzen\Desktop\Maestry\TESIS\Nueva carpeta\ETL\data\radar_processed\Guaviare\20250510\20250510T000127_sweep0.nc"
     mostrar_metadatos_raw(archivo)
+    
+    # C:\Users\Ryzen\Desktop\Maestry\TESIS\Nueva carpeta\ETL\data\radar_processed\Tablazo\20250611\20250611T000012_sweep0.nc

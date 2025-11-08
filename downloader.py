@@ -18,7 +18,7 @@ def download_one_file(bucket_name: str, s3_key: str, local_path: str):
 
 if __name__ == "__main__":
     bucket = "s3-radaresideam"
-    prefix = "l2_data/2024/05/15/Guaviare/"  # Cambia el prefijo si lo necesitas
+    prefix = "l2_data/2024/05/15/"  # Cambia el prefijo si lo necesitas
 
     # Listar archivos
     files = list_files(bucket, prefix)

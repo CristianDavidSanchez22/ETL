@@ -5,7 +5,7 @@ import xarray as xr
 import xradar as xd
 import numpy as np
 from shapely.geometry import box, mapping
-
+import pytz
 class RadarProcessor:
     def __init__(self, output_dir: str):
         self.output_dir = output_dir
@@ -21,8 +21,13 @@ class RadarProcessor:
         )
 
         # Abrir y procesar con xradar
-        ds = xr.open_dataset(file, engine="iris", group="sweep_0")
+        # ds = xr.open_dataset(file, engine="iris", group="sweep_0")
+        # ds = xd.io.open_iris_datatree(file)['sweep_0'].ds
+        info_radar = xd.io.open_iris_datatree(file)
+        ds = info_radar['sweep_0'].ds
+        ds.attrs.update(info_radar.attrs)
         ds = xd.georeference.get_x_y_z(ds)
+        
 
         # Extraer timestamp y nombre del archivo
         timestamp = ds.time.values[0].astype("datetime64[s]").item().strftime("%Y%m%dT%H%M%S")
@@ -48,6 +53,8 @@ class RadarProcessor:
 
     def get_statistics(self, ds: xr.Dataset) -> dict:
         variable = "DBZH"
+        lima_tz = pytz.timezone("America/Lima")
+        date = datetime.now(lima_tz)
         if variable not in ds.data_vars:
             raise ValueError(f"No se encontró la variable {variable} en el archivo.")
 
@@ -75,5 +82,5 @@ class RadarProcessor:
             "rain_area_percent": rain_area_percent,
             "duration_minutes": duration_minutes,
             "event_bbox": mapping(event_bbox),
-            "created_at": datetime.utcnow()
+            "created_at": date
         }

@@ -26,23 +26,25 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--radar", type=str, required=False, default="Guaviare", help="Nombre del radar a procesar (default: Guaviare)")
     parser.add_argument("--date", type=str, required=False, help="Fecha en formato YYYYMMDD para procesar archivos específicos")
+    parser.add_argument("--hour", type=int, required=False, default= 0, help="Hora en formato HH para procesar archivos específicos desde hora especifica")
     args = parser.parse_args()
     radar_name = args.radar
+    from_hour = args.hour
     if args.date:
         input_date = args.date
     else:
         lima_tz = timezone("America/Lima")
         input_date = datetime.now(lima_tz).strftime("%Y%m%d")
-    return radar_name, input_date
+    return radar_name, input_date, from_hour
 
 
 
 if __name__ == "__main__":
     
-    radar_name, input_date = parse_args()
+    radar_name, input_date,from_hour = parse_args()
         
     downloader = S3RadarDownloader(radar_name)   
-    processor = RadarProcessor(output_dir=f"./data/radar_processed/{radar_name}/{input_date}/")
+    processor = RadarProcessor(output_dir=os.path.abspath(f"./data/radar_processed/{radar_name}/{input_date}/"))
     repository = RadarMetadataRepository(db_url=DB_URL)
     input_date = datetime.strptime(input_date, "%Y%m%d") if input_date else None
     etl = RadarETL(
@@ -51,4 +53,4 @@ if __name__ == "__main__":
         processor=processor,
         repository=repository
     )
-    etl.run(input_date)
+    etl.run(input_date,from_hour)
